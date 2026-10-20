@@ -2,11 +2,91 @@ function notImplemented() {
   throw new Error('Корзина ещё не реализована. Сначала прочитайте тесты.');
 }
 
-function addToCart() { return notImplemented(); }
-function changeQuantity() { return notImplemented(); }
-function removeFromCart() { return notImplemented(); }
-function calculateCartSubtotal() { return notImplemented(); }
-function calculateOrderTotal() { return notImplemented(); }
+function addToCart(cartCurrent, product, qty) { 
+  const cartProduct = cartCurrent.find((item) => item.id === product.id);
+
+  if (!Number.isInteger(qty) || qty <= 0) {
+    throw new RangeError("Количество должно быть положительным целым числом");
+  }
+
+  if (qty > product.stock) {
+    throw new RangeError('Недостаточно товара на складе');
+  }
+
+  if (cartProduct) {
+    return cartCurrent.map((item) => {
+      if (item.id === product.id) {
+        if (product.stock < item.quantity + qty) {
+          throw new RangeError("Недостаточно товара на складе");
+        } else {
+          return {
+            ...item,
+            quantity: item.quantity + qty,
+          }
+        }
+      }
+      return item;
+    });
+  } else {
+    return [
+      ...cartCurrent,
+      {
+        ...product,
+        quantity: qty,
+      },
+    ];
+  }
+}
+
+function changeQuantity(cartCurrent, id, qty) { 
+  const product = cartCurrent.find((item) => item.id === id);
+
+  if (qty <= 0) throw new RangeError('Количество должно быть больше нуля');
+
+  return cartCurrent.map((item) => {
+    if (item.id === id) {
+      if (product.stock < qty) {
+        throw new RangeError('Недостаточно товара на складе')
+      } else {
+        return {
+          ...item,
+          quantity: qty,
+        }
+      }
+    }
+    
+    return item;
+  });
+}
+
+function removeFromCart(cartCurrent, id) {
+   return cartCurrent.filter((item) => item.id !== id);
+}
+
+function calculateCartSubtotal(cartCurrent) {
+  return cartCurrent.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0,
+  );
+}
+
+function calculateOrderTotal(cartCurrent, promo) { 
+  const sum = calculateCartSubtotal(cartCurrent);
+  let discount = 0;
+
+  const delivery = (sum >= 50000) ? 0 : 30000; 
+
+  if ((promo.toUpperCase() === 'SAVE10') && sum >= 20000) {
+    discount = sum * 0.1;
+  }
+
+  return {
+    subtotal: sum,
+    discount: discount,
+    delivery: delivery,
+    total: sum - discount + delivery
+  };
+}
 
 const cartApi = { addToCart, changeQuantity, removeFromCart, calculateCartSubtotal, calculateOrderTotal };
 
