@@ -39,6 +39,5 @@ document.addEventListener('click', (event) => {
     render();
   } catch (error) { showError(error); }
 });
-
 promoInput.addEventListener('input', render);
 render();
