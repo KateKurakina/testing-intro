@@ -70,7 +70,23 @@ function calculateCartSubtotal(cartCurrent) {
   );
 }
 
-function calculateOrderTotal() { return notImplemented(); }
+function calculateOrderTotal(cartCurrent, promo) { 
+  const sum = calculateCartSubtotal(cartCurrent);
+  let discount = 0;
+
+  const delivery = (sum >= 50000) ? 0 : 30000; 
+
+  if ((promo.toUpperCase() === 'SAVE10') && sum >= 20000) {
+    discount = sum * 0.1;
+  }
+
+  return {
+    subtotal: sum,
+    discount: discount,
+    delivery: delivery,
+    total: sum - discount + delivery
+  };
+}
 
 const cartApi = { addToCart, changeQuantity, removeFromCart, calculateCartSubtotal, calculateOrderTotal };
 
