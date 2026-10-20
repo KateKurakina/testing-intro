@@ -59,7 +59,10 @@ function changeQuantity(cartCurrent, id, qty) {
   });
 }
 
-function removeFromCart() { return notImplemented(); }
+function removeFromCart(cartCurrent, id) {
+   return cartCurrent.filter((item) => item.id !== id);
+}
+
 function calculateCartSubtotal() { return notImplemented(); }
 function calculateOrderTotal() { return notImplemented(); }
 
